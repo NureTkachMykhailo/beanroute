@@ -1,0 +1,35 @@
+{% extends "accounts/cabinet_base.html" %}
+{% load shop_extras %}
+{% block title %}Кабінет — Огляд{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Огляд кабінету</h1>
+
+<div class="cabinet-stats">
+  <div class="cabinet-card"><div class="label" style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">Замовлень</div><div style="font-family:var(--font-display); font-size:26px;">{{ orders_count }}</div></div>
+  <div class="cabinet-card"><div class="label" style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">Витрачено</div><div style="font-family:var(--font-display); font-size:26px;">{{ total_spent|uah }}</div></div>
+  <div class="cabinet-card"><div class="label" style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">В обраному</div><div style="font-family:var(--font-display); font-size:26px;">{{ wishlist_count }}</div></div>
+  <div class="cabinet-card"><div class="label" style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">Сер. оцінка</div><div style="font-family:var(--font-display); font-size:26px;">{{ avg_rating_given }}</div></div>
+</div>
+
+<div class="chart-row">
+  <div class="cabinet-card">
+    <h3 style="font-size:15px; margin-bottom:10px;">Витрати за місяцями</h3>
+    {{ spending_chart|safe }}
+  </div>
+  <div class="cabinet-card">
+    <h3 style="font-size:15px; margin-bottom:10px;">Категорії покупок</h3>
+    {{ category_chart|safe }}
+  </div>
+</div>
+
+{% if last_order %}
+<div class="cabinet-card">
+  <h3 style="font-size:15px; margin-bottom:10px;">Останнє замовлення</h3>
+  <a href="{% url 'cabinet_order_detail' last_order.id %}">
+    Замовлення №{{ last_order.id }}
+    <span class="order-status {{ last_order.status }}">{{ last_order.get_status_display }}</span>
+    — {{ last_order.total|uah }}
+  </a>
+</div>
+{% endif %}
+{% endblock %}

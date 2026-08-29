@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ site_settings.hero_title }} — {{ site_settings.hero_subtitle }}{% endblock %}
+{% block content %}
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-kicker">Обсмажувальня з 2021</div>
+      <h1>{{ site_settings.hero_subtitle }}</h1>
+      <p>Закуповуємо лоти напряму у фермерів, обсмажуємо малими партіями і публікуємо кожен лот з повним паспортом походження.</p>
+      <div class="hero-actions">
+        <a class="btn" href="{% url 'catalog' %}">{{ site_settings.hero_cta }}</a>
+        <a class="btn secondary" href="#faq">Про обсмажувальню</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg width="220" height="260" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="110" cy="230" rx="70" ry="10" fill="#33251b"/>
+        <path d="M60 90 L160 90 L140 190 Q110 205 80 190 Z" fill="none" stroke="#d1a054" stroke-width="3"/>
+        <rect x="70" y="195" width="80" height="14" rx="3" fill="none" stroke="#d1a054" stroke-width="3"/>
+        <path d="M80 209 L90 235 L130 235 L140 209 Z" fill="none" stroke="#c96a45" stroke-width="3"/>
+        <path d="M95 60 Q100 45 90 35" fill="none" stroke="#7a6a57" stroke-width="3" stroke-linecap="round"/>
+        <path d="M112 60 Q117 40 105 25" fill="none" stroke="#7a6a57" stroke-width="3" stroke-linecap="round"/>
+        <path d="M129 60 Q134 45 124 35" fill="none" stroke="#7a6a57" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="60" cy="120" r="4" fill="#c96a45"/>
+        <circle cx="160" cy="140" r="5" fill="#d1a054"/>
+        <circle cx="45" cy="170" r="3" fill="#7a8c5a"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">Лоти</div><div class="value">{{ stats.lots }}</div><div class="hint">активні в каталозі</div></div>
+    <div class="stat-card"><div class="label">Категорії</div><div class="value">{{ stats.categories }}</div><div class="hint">регіони походження</div></div>
+    <div class="stat-card"><div class="label">Замовлення</div><div class="value">{{ stats.orders }}</div><div class="hint">без скасованих</div></div>
+    <div class="stat-card"><div class="label">Сер. оцінка</div><div class="value">{{ stats.avg_rating }}</div><div class="hint">з відгуків покупців</div></div>
+  </div>
+
+  <section class="block">
+    <h2 class="section-title">На вітрині</h2>
+    <div class="featured-grid">
+      {% for p in featured %}
+        <a class="product-card" href="{% url 'product_detail' p.slug %}">
+          <span class="origin">{{ p.origin_country }}</span>
+          <h3>{{ p.name }}</h3>
+          <span class="stock">{{ p.weight_g }} г · залишок {{ p.stock }}</span>
+          <span class="price">{{ p.price|floatformat:0 }} ₴</span>
+        </a>
+      {% empty %}
+        <p>Поки немає лотів на вітрині.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if services %}
+  <section class="block">
+    <h2 class="section-title">Що ми робимо</h2>
+    <div class="featured-grid">
+      {% for s in services %}
+        <div class="product-card">
+          <h3>{{ s.title }}</h3>
+          <span class="stock">{{ s.description }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="block" id="faq">
+    <h2 class="section-title">Питання і відповіді</h2>
+    {% for item in faqs %}
+      <div class="faq-item">
+        <div class="q">{{ item.question }}</div>
+        <div class="a">{{ item.answer }}</div>
+      </div>
+    {% endfor %}
+    <div style="margin-top:20px;">
+      <a class="btn" href="{% url 'catalog' %}">Отримати консультацію в каталозі</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

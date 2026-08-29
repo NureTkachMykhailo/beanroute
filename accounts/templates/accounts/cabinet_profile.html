@@ -1,0 +1,12 @@
+{% extends "accounts/cabinet_base.html" %}
+{% block title %}Профіль{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Профіль</h1>
+<div class="cabinet-card">
+  <form method="post" class="form-row">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit" style="margin-top:10px;">Зберегти</button>
+  </form>
+</div>
+{% endblock %}

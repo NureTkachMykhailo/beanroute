@@ -1,0 +1,60 @@
+{% extends "accounts/cabinet_base.html" %}
+{% block title %}Моніторинг запитів{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Моніторинг запитів</h1>
+
+<div class="cabinet-stats" style="grid-template-columns: repeat(2, 1fr);">
+  <div class="cabinet-card"><div style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">Обсяг запитів</div><div style="font-family:var(--font-display); font-size:26px;">{{ stats.volume }}</div></div>
+  <div class="cabinet-card"><div style="font-size:11px; text-transform:uppercase; color:var(--color-muted);">Середній час, мс</div><div style="font-family:var(--font-display); font-size:26px;">{{ stats.avg_ms|floatformat:0 }}</div></div>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="text" name="user" placeholder="Користувач..." value="{{ username }}">
+  <select name="status">
+    <option value="">Усі статуси</option>
+    <option value="200" {% if status == "200" %}selected{% endif %}>2xx</option>
+    <option value="300" {% if status == "300" %}selected{% endif %}>3xx</option>
+    <option value="400" {% if status == "400" %}selected{% endif %}>4xx</option>
+  </select>
+  <input type="date" name="date_from" value="{{ date_from }}">
+  <input type="date" name="date_to" value="{{ date_to }}">
+  <button class="btn" type="submit">Фільтрувати</button>
+</form>
+
+<div class="cabinet-card">
+  <table class="data-table">
+    <thead><tr><th>Метод</th><th>Шлях</th><th>Статус</th><th>Мс</th><th>Користувач</th><th>Коли</th></tr></thead>
+    <tbody>
+      {% for log in page_obj %}
+        <tr>
+          <td>{{ log.method }}</td>
+          <td>{{ log.path }}</td>
+          <td><span class="status-pill s{{ log.status_code|stringformat:'s'|slice:':1' }}">{{ log.status_code }}</span></td>
+          <td>{{ log.duration_ms }}</td>
+          <td>{{ log.user.username|default:"—" }}</td>
+          <td>{{ log.created_at|date:"d.m H:i:s" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">Записів не знайдено.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>{% endif %}
+    <span class="current">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">&raquo;</a>{% endif %}
+  </div>
+</div>
+
+<div class="cabinet-card">
+  <h3 style="font-size:15px; margin-bottom:10px;">Останні входи/виходи</h3>
+  <ul class="audit-feed">
+    {% for e in audit_recent %}
+      <li><span class="ev">{{ e.get_event_type_display }}</span> — {{ e.user.username }} · {{ e.created_at|date:"d.m H:i" }}</li>
+    {% empty %}
+      <li>Подій ще немає.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

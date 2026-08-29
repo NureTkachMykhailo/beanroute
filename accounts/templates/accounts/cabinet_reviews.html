@@ -1,0 +1,14 @@
+{% extends "accounts/cabinet_base.html" %}
+{% block title %}Мої відгуки{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Мої відгуки</h1>
+{% for r in reviews %}
+  <div class="cabinet-card">
+    <a href="{% url 'product_detail' r.product.slug %}"><strong>{{ r.product.name }}</strong></a>
+    <div class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+    <p>{{ r.text }}</p>
+  </div>
+{% empty %}
+  <p>Ви ще не залишали відгуків.</p>
+{% endfor %}
+{% endblock %}

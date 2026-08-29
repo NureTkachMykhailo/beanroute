@@ -1,0 +1,16 @@
+{% extends "accounts/cabinet_base.html" %}
+{% block title %}Обране{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Обране</h1>
+<div class="featured-grid">
+  {% for item in items %}
+    <a class="product-card" href="{% url 'product_detail' item.product.slug %}">
+      <span class="origin">{{ item.product.category.name }}</span>
+      <h3>{{ item.product.name }}</h3>
+      <span class="price">{{ item.product.price|floatformat:0 }} ₴</span>
+    </a>
+  {% empty %}
+    <p>Список обраного порожній.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Каталог — {{ site_settings.hero_title }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:32px;">
+  <h1 class="section-title">Каталог зерна</h1>
+
+  <form class="toolbar" method="get">
+    <input type="text" name="q" placeholder="Пошук за назвою або країною..." value="{{ q }}">
+    <select name="category">
+      <option value="">Усі категорії</option>
+      {% for c in categories %}
+        <option value="{{ c.slug }}" {% if category_slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="price_min" placeholder="Ціна від" value="{{ price_min }}" style="width:110px;">
+    <input type="number" name="price_max" placeholder="Ціна до" value="{{ price_max }}" style="width:110px;">
+    <select name="sort">
+      <option value="-created_at" {% if sort_by == "-created_at" %}selected{% endif %}>Спочатку нові</option>
+      <option value="price" {% if sort_by == "price" %}selected{% endif %}>Дешевші спочатку</option>
+      <option value="-price" {% if sort_by == "-price" %}selected{% endif %}>Дорожчі спочатку</option>
+      <option value="name" {% if sort_by == "name" %}selected{% endif %}>За назвою</option>
+    </select>
+    <button class="btn" type="submit">Застосувати</button>
+  </form>
+
+  <div class="result-count">Знайдено лотів: {{ result_count }}</div>
+
+  <div class="catalog-grid">
+    {% for p in page_obj %}
+      <a class="product-card" href="{% url 'product_detail' p.slug %}">
+        <span class="origin">{{ p.category.name }}</span>
+        <h3>{{ p.name }}</h3>
+        <span class="stock">{{ p.origin_country }} · {{ p.get_roast_level_display }}</span>
+        <span class="stock">залишок {{ p.stock }}</span>
+        <span class="price">{{ p.price|floatformat:0 }} ₴</span>
+      </a>
+    {% empty %}
+      <p>Нічого не знайдено за заданими фільтрами.</p>
+    {% endfor %}
+  </div>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&category={{ category_slug }}&sort={{ sort_by }}">&laquo;</a>
+    {% endif %}
+    <span class="current">{{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&category={{ category_slug }}&sort={{ sort_by }}">&raquo;</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

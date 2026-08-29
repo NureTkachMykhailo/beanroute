@@ -1,0 +1,35 @@
+{% extends "accounts/cabinet_base.html" %}
+{% load shop_extras %}
+{% block title %}Замовлення №{{ order.id }}{% endblock %}
+{% block cabinet_content %}
+<h1 class="section-title">Замовлення №{{ order.id }}</h1>
+<div class="chart-row">
+  <div class="cabinet-card">
+    <p><span class="order-status {{ order.status }}">{{ order.get_status_display }}</span> · {{ order.created_at|date:"d.m.Y H:i" }}</p>
+    <table class="data-table">
+      <thead><tr><th>Лот</th><th>К-сть</th><th>Ціна</th><th>Сума</th></tr></thead>
+      <tbody>
+        {% for item in order.items.all %}
+          <tr>
+            <td><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price|uah }}</td>
+            <td>{{ item.line_total|uah }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p style="text-align:right; font-weight:700; margin-top:10px;">Разом: {{ order.total|uah }}</p>
+  </div>
+  <div class="cabinet-card">
+    <h3 style="font-size:15px; margin-bottom:10px;">Стрічка подій</h3>
+    <ul class="audit-feed">
+      {% for e in recent_events %}
+        <li><span class="ev">{{ e.get_event_type_display }}</span> · {{ e.created_at|date:"d.m H:i" }} {% if e.meta %}— {{ e.meta }}{% endif %}</li>
+      {% empty %}
+        <li>Подій ще немає.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

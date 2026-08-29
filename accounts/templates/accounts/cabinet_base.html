@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="cabinet-layout">
+    <nav class="cabinet-nav">
+      <a href="{% url 'cabinet_overview' %}" class="{% if active == 'overview' %}active{% endif %}">Огляд</a>
+      <a href="{% url 'cabinet_orders' %}" class="{% if active == 'orders' %}active{% endif %}">Замовлення</a>
+      <a href="{% url 'cabinet_wishlist' %}" class="{% if active == 'wishlist' %}active{% endif %}">Обране</a>
+      <a href="{% url 'cabinet_reviews' %}" class="{% if active == 'reviews' %}active{% endif %}">Відгуки</a>
+      <a href="{% url 'cabinet_profile' %}" class="{% if active == 'profile' %}active{% endif %}">Профіль</a>
+      <a href="{% url 'cabinet_security' %}" class="{% if active == 'security' %}active{% endif %}">Безпека</a>
+      {% if user.is_staff %}
+        <a href="{% url 'staff_logs' %}" class="{% if active == 'monitoring' %}active{% endif %}">Моніторинг</a>
+      {% endif %}
+    </nav>
+    <div>
+      {% block cabinet_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

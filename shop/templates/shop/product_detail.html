@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — {{ site_settings.hero_title }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:32px;">
+  <a href="{% url 'catalog' %}" style="font-size:13px;">&larr; До каталогу</a>
+
+  <div class="passport" style="margin-top:16px;">
+    <div class="passport-art">
+      <svg width="140" height="180" viewBox="0 0 140 180" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="20" width="100" height="130" rx="10" fill="none" stroke="#d1a054" stroke-width="3"/>
+        <circle cx="70" cy="70" r="26" fill="none" stroke="#c96a45" stroke-width="3"/>
+        <path d="M40 120 h60 M40 132 h60" stroke="#7a6a57" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <span class="badge">{{ product.category.name }}</span>
+      <h1 style="font-size:30px; margin:10px 0 6px;">{{ product.name }}</h1>
+      <div style="color:var(--color-muted); font-size:14px;">{{ product.origin_country }} · {{ product.producer }}</div>
+
+      <dl class="spec-list">
+        <dt>Обсмажка</dt><dd>{{ product.get_roast_level_display }}</dd>
+        <dt>Обробка</dt><dd>{{ product.get_process_display }}</dd>
+        <dt>Висота, м</dt><dd>{{ product.altitude_m }}</dd>
+        <dt>Вага</dt><dd>{{ product.weight_g }} г</dd>
+        <dt>Лот</dt><dd>{{ product.lot_reference|default:"—" }}</dd>
+        <dt>Залишок</dt><dd>{{ product.stock }} уп.</dd>
+      </dl>
+
+      {% if product.cupping_notes %}<p><strong>Дегустаційні нотки:</strong> {{ product.cupping_notes }}</p>{% endif %}
+      <p>{{ product.description }}</p>
+
+      <div style="font-family:var(--font-display); font-size:26px; margin:14px 0;">{{ product.price|floatformat:0 }} ₴</div>
+
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'create_order' product.id %}" style="display:flex; gap:10px; align-items:center;">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" style="width:70px; padding:8px; border-radius:6px; border:1px solid var(--color-border);">
+          <button class="btn" type="submit" {% if product.stock == 0 %}disabled{% endif %}>Замовити</button>
+        </form>
+        <form method="post" action="{% url 'toggle_wishlist' product.id %}" style="margin-top:10px;">
+          {% csrf_token %}
+          <button class="btn secondary small" type="submit" style="color:var(--color-text); border-color:var(--color-border);">
+            {% if in_wishlist %}Прибрати з обраного{% else %}Додати в обране{% endif %}
+          </button>
+        </form>
+      {% else %}
+        <a class="btn" href="{% url 'login' %}?next={{ request.path }}">Увійдіть, щоб замовити</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="block" style="padding-top:0;">
+    <h2 class="section-title">Відгуки ({{ reviews.count }})</h2>
+
+    {% if user.is_authenticated %}
+      {% if has_purchased %}
+        <form method="post" action="{% url 'create_review' product.id %}" class="cabinet-card">
+          {% csrf_token %}
+          <div class="badge verified">Перевірена покупка</div>
+          <div class="form-row">
+            <label>Оцінка</label>
+            <select name="rating">
+              {% for i in "12345" %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Відгук</label>
+            <textarea name="text" required>{% if already_reviewed %}{% endif %}</textarea>
+          </div>
+          <button class="btn small" type="submit" style="margin-top:10px;">{% if already_reviewed %}Оновити відгук{% else %}Опублікувати{% endif %}</button>
+        </form>
+      {% else %}
+        <p style="color:var(--color-muted);">Відгук можна залишити лише після покупки цього лота.</p>
+      {% endif %}
+    {% else %}
+      <p><a href="{% url 'login' %}">Увійдіть</a>, щоб залишити відгук.</p>
+    {% endif %}
+
+    {% for r in reviews %}
+      <div class="review-card">
+        <div class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <strong>{{ r.user.username }}</strong> <span class="badge verified">перевірена покупка</span>
+        <div style="color:var(--color-muted); font-size:12px;">{{ r.created_at|date:"d.m.Y" }}</div>
+        <p>{{ r.text }}</p>
+      </div>
+    {% empty %}
+      <p style="color:var(--color-muted);">Відгуків ще немає.</p>
+    {% endfor %}
+  </section>
+
+  {% if similar %}
+  <section class="block" style="padding-top:0;">
+    <h2 class="section-title">Схожі лоти</h2>
+    <div class="featured-grid">
+      {% for p in similar %}
+        <a class="product-card" href="{% url 'product_detail' p.slug %}">
+          <span class="origin">{{ p.origin_country }}</span>
+          <h3>{{ p.name }}</h3>
+          <span class="price">{{ p.price|floatformat:0 }} ₴</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

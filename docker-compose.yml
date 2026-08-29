@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    container_name: beanroute_db
+    volumes:
+      - beanroute_pg:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=beanroute
+      - POSTGRES_USER=beanroute
+      - POSTGRES_PASSWORD=beanroute
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beanroute"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    container_name: beanroute_web
+    ports:
+      - "8000:8000"
+    pull_policy: missing
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=beanroute
+      - POSTGRES_USER=beanroute
+      - POSTGRES_PASSWORD=beanroute
+      - DEBUG=1
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  beanroute_pg:

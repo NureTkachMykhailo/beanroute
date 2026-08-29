@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  /* primitives — raw palette, never referenced outside this file */
+  --sand-50:  #fbf7f0;
+  --sand-100: #f4ecdf;
+  --sand-200: #e8dbc4;
+  --coffee-700: #4a3628;
+  --coffee-800: #33251b;
+  --coffee-900: #241a13;
+  --rust-400: #c96a45;
+  --rust-500: #b3502c;
+  --rust-600: #93401f;
+  --green-500: #7a8c5a;
+  --gold-400: #d1a054;
+  --ink-500: #6b5b4f;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, sans-serif;
+
+  --space-section: 64px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+}

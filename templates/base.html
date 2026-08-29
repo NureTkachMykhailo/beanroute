@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}BeanRoute{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'shop/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'shop/beanroute.css' %}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="{% url 'landing' %}">{{ site_settings.hero_title }}<span class="sub">мікро-обсмажувальня кави</span></a>
+      <div class="nav-links">
+        <a href="{% url 'catalog' %}">Каталог</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'cabinet_overview' %}">Кабінет</a>
+          {% if user.is_staff %}<a href="{% url 'staff_logs' %}">Моніторинг</a>{% endif %}
+          <a href="{% url 'logout' %}">Вихід ({{ user.username }})</a>
+        {% else %}
+          <a href="{% url 'login' %}">Увійти</a>
+          <a class="btn-ghost" href="{% url 'register' %}">Реєстрація</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if messages %}
+    <div class="container" style="margin-top:20px;">
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</body>
+</html>
